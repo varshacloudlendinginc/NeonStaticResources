@@ -1,0 +1,8 @@
+id,NAME,LOAN__FEE_CATEGORY__C,LOAN__TIME_OF_CHARGE__C,LOAN__DEFAULT_FEES__C,LOAN__FEE_CALCULATION_METHOD__C,LOAN__AMOUNT__C,LOAN__STATE__C,LOAN__INCOME_ACCOUNT__C,LOAN__SUSPENDED_FEE_ACCOUNT__C,LOAN__MAINTENANCE_FEE_S_FREQUENCY__C,LOAN__INTEREST_BEARING__C,LOAN__INTEREST_RATE__C
+f1,Contact Registration,Client,Time of Registration,TRUE,Fixed,100,Active,30000,20000,,FALSE,0
+f2,Group Registration,Group,Time of Registration,TRUE,Fixed,100,Active,30000,20000,,FALSE,0
+f3,TimeOfDisbursement_%LoanAmount,Loan,Time of Disbursement,TRUE,Amount calculated as % of loan amount,1,Active,30000,20000,,FALSE,0
+f4,LateFees_Fixed,Loan,Late Fees,TRUE,Fixed,200,Active,30000,20000,,FALSE,0
+f5,TimeOfRegistration_Fixed,Loan,Time of Registration,TRUE,Fixed,100,Active,30000,20000,,FALSE,0
+f6,Other_%LoanAmount,Loan,Other,TRUE,Amount calculated as % of loan amount,2,Active,30000,20000,,FALSE,0
+f7,PayOff_Fixed,Loan,Pay-Off Fees,TRUE,Fixed,250,Active,30000,20000,,FALSE,0

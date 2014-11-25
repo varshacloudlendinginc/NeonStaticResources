@@ -1,0 +1,336 @@
+/**
+ * Test ACH
+ */
+@isTest
+private class TestACH {
+    static void achInitiator(){
+        ACH_Parameters__c achParams = CustomSettingsUtil.getACHParameters();
+        achParams.Days_In_Advance_To_Create_File__c = 2;
+        achParams.Organization_Name__c='Cloud Lending';
+        upsert achParams;
+    }
+    
+    static void assertRecurringACHValues(Loan_Account__c loanAcc,Date ACH_DebitDate,Date ACH_NextDebitDate)
+    {
+        system.assertEquals(true, loanAcc.ACH_On__c);
+        system.assertEquals(ACH_NextDebitDate, loanAcc.ACH_Next_Debit_Date__c);
+        String fileNameLike = ACH_DebitDate.format();
+        String fileName = '%- ACH -%' + fileNameLike + '%';
+        Document[] doc = [Select id,Name from Document where Name like: fileName];
+        system.debug(system.loggingLevel.ERROR,'-----'+doc);
+        system.assertEquals(1, doc.size());
+        ACHVerifier achverifier = new ACHVerifier(ACH_DebitDate);
+        achverifier.verify();
+        //achverifier.ErrorCode;
+        Map<String, achverifier.ErrorCode> achErrorMap = achverifier.getErrors();
+        system.debug(system.loggingLevel.ERROR,'-----'+achErrorMap.values().size());
+        String loanError = '\'' + loanAcc.Name + '\'';
+        achErrorMap.get(loanError);
+        system.assertEquals(true, achErrorMap.isEmpty());
+        fileName = '%- ACH Batch -%' + fileNameLike + '%';
+        Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface' and Batch_Name__c like:fileName];
+        system.debug(system.loggingLevel.ERROR,'-----'+dmb);
+        system.assertEquals(1, dmb.size());
+        
+        /*Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface'];
+        system.debug(system.loggingLevel.ERROR,'--dmb size---'+dmb.size());
+        system.debug(system.loggingLevel.ERROR,'---dmb values--'+dmb);
+        Loan_Payment_Transaction_Interface__c[] lpti;
+        for(Data_Migration_Batch__c d:dmb)
+        {
+         lpti = [Select Stage__c,Payment_Mode_Id__c,Loan_Id__c,Transaction_Amount__c,
+                                                        Transaction_Date__c
+                                                        from Loan_Payment_Transaction_Interface__c 
+                                                        where Data_Migration_Batch__c=:d.id];
+          
+         system.debug(system.loggingLevel.ERROR,'--lpti size---'+d.Batch_Name__c + lpti.size());                                              
+                                                        
+        }*/
+        
+        Loan_Payment_Transaction_Interface__c[] lpti = [Select Stage__c,Payment_Mode_Id__c,Loan_Id__c,Transaction_Amount__c,
+                                                        Transaction_Date__c
+                                                        from Loan_Payment_Transaction_Interface__c 
+                                                        where Data_Migration_Batch__c=:dmb[0].id
+                                                        AND Loan_Id__c=:loanAcc.id];
+        system.assertEquals(1, lpti.size());
+        system.assertEquals('Pre-Import', lpti[0].Stage__c);
+        Payment_Mode__c pm =[Select id,Name from Payment_Mode__c where Name='ACH'];
+        system.assertEquals(pm.id, lpti[0].Payment_Mode_Id__c);
+        system.assertEquals(loanAcc.id, lpti[0].Loan_Id__c);
+        system.assertEquals(500, ValueUtil.round(lpti[0].Transaction_Amount__c));
+        system.assertEquals(ACH_DebitDate, lpti[0].Transaction_Date__c);
+    
+    }
+    
+    
+    static void assertOTACHValues(Loan_Account__c loanAcc,Date ACH_DebitDate)
+    {
+    
+        system.assertEquals(null,loanAcc.OT_ACH_Debit_Date__c);
+        system.assertEquals(0,ValueUtil.round(loanAcc.OT_ACH_Fee_Amount__c));
+        system.assertEquals(0,ValueUtil.round(loanAcc.OT_ACH_Payment_Amount__c));
+        
+        String fileNameLike = ACH_DebitDate.format();
+        String fileName = '%- ACH -%' + fileNameLike + '%';
+        Document[] doc = [Select id,Name from Document where Name like: fileName];
+        system.debug(system.loggingLevel.ERROR,'-----'+doc);
+        system.assertEquals(1, doc.size());
+        ACHVerifier achverifier = new ACHVerifier(ACH_DebitDate);
+        //achverifier.verify();
+        //achverifier.ErrorCode;
+        Map<String, achverifier.ErrorCode> achErrorMap = achverifier.getErrors();
+        system.debug(system.loggingLevel.ERROR,'-----'+achErrorMap.values().size());
+        String loanError = '\'' + loanAcc.Name + '\'';
+        achErrorMap.get(loanError);
+        system.assertEquals(true, achErrorMap.isEmpty());
+        fileName = '%- ACH Batch -%' + fileNameLike + '%';
+        Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface' and Batch_Name__c like:fileName];
+        //Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface'];
+        system.debug(system.loggingLevel.ERROR,'--dmb size---'+dmb.size());
+        system.debug(system.loggingLevel.ERROR,'---dmb values--'+dmb);
+        system.assertEquals(1, dmb.size());
+        Loan_Payment_Transaction_Interface__c[] lpti = [Select Stage__c,Payment_Mode_Id__c,Loan_Id__c,Transaction_Amount__c,
+                                                        Transaction_Date__c
+                                                        from Loan_Payment_Transaction_Interface__c 
+                                                        where Data_Migration_Batch__c=:dmb[0].id  
+                                                        AND Loan_Id__c=:loanAcc.id];
+        system.assertEquals(1, lpti.size());
+        system.assertEquals('Pre-Import', lpti[0].Stage__c);
+        Payment_Mode__c pm =[Select id,Name from Payment_Mode__c where Name='ACH'];
+        system.assertEquals(pm.id, lpti[0].Payment_Mode_Id__c);
+        system.assertEquals(loanAcc.id, lpti[0].Loan_Id__c);
+        system.assertEquals(400, ValueUtil.round(lpti[0].Transaction_Amount__c));
+        system.assertEquals(ACH_DebitDate, lpti[0].Transaction_Date__c);
+        
+        /*Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface'];
+        system.debug(system.loggingLevel.ERROR,'--dmb size---'+dmb.size());
+        system.debug(system.loggingLevel.ERROR,'---dmb values--'+dmb);
+        Loan_Payment_Transaction_Interface__c[] lpti;
+        for(Data_Migration_Batch__c d:dmb)
+        {
+         lpti = [Select Stage__c,Payment_Mode_Id__c,Loan_Id__c,Transaction_Amount__c,
+                                                        Transaction_Date__c
+                                                        from Loan_Payment_Transaction_Interface__c 
+                                                        where Data_Migration_Batch__c=:d.id];
+          
+         system.debug(system.loggingLevel.ERROR,'--lpti size---'+ d.Batch_Name__c +'  '+ lpti.size());                                              
+                                                        
+        }*/
+    
+    }
+   static testMethod void testRecurringACHMonthlyA() {
+       TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r_ach_l1'];
+        Test.startTest();
+            
+            //to increase the test coverage
+            Date dt = SystemDateUtil.getCurrentSystemDate();
+            LoanDisbursalTxnSweepToACHJob j1 = new LoanDisbursalTxnSweepToACHJob();
+            //j1 = new LoanDisbursalTxnSweepToACHJob();
+            InvestorPaymentTxnSweepToACHJob j2= new   InvestorPaymentTxnSweepToACHJob();
+            //j2 = new InvestorPaymentTxnSweepToACHJob();
+            InvestorFundTxnClearingJob j3 = new InvestorFundTxnClearingJob();  
+            //j3 = new InvestorFundTxnClearingJob();
+            LoanPaymentTxnClearingJob j4 = new LoanPaymentTxnClearingJob();
+            //j4 = new LoanPaymentTxnClearingJob(); 
+            StartofDayJob sj = new StartofDayJob();
+            EndofDayJob ej = new EndofDayJob(); 
+            JobChainPicker picker =new JobChainPicker();
+            picker.executeNextJob('LockBasedACH', false);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertRecurringACHValues(loanAcc2,Date.newInstance(2013,1,18),Date.newInstance(2013,2,18));
+   } 
+   static testMethod void testRecurringACHMonthlyB() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r_ach_l1'];
+        Test.startTest();
+            
+            //to increase the test coverage
+            Date dt = SystemDateUtil.getCurrentSystemDate();
+            LoanDisbursalTxnSweepToACHJob j1 = new LoanDisbursalTxnSweepToACHJob(dt, true);
+            //j1 = new LoanDisbursalTxnSweepToACHJob();
+            InvestorPaymentTxnSweepToACHJob j2= new   InvestorPaymentTxnSweepToACHJob(dt,true);
+            //j2 = new InvestorPaymentTxnSweepToACHJob();
+            InvestorFundTxnClearingJob j3 = new InvestorFundTxnClearingJob(dt,true);  
+            //j3 = new InvestorFundTxnClearingJob();
+            LoanPaymentTxnClearingJob j4 = new LoanPaymentTxnClearingJob(dt,true);
+            //j4 = new LoanPaymentTxnClearingJob(); 
+            StartofDayJob sj = new StartofDayJob();
+            EndofDayJob ej = new EndofDayJob(); 
+            JobChainPicker picker =new JobChainPicker();
+            picker.executeNextJob('LockBasedACH', false);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertRecurringACHValues(loanAcc2,Date.newInstance(2013,1,18),Date.newInstance(2013,2,18));
+       }
+       
+    static testMethod void testRecurringACHWeekly() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r_ach_l2'];
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,1,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertRecurringACHValues(loanAcc2,Date.newInstance(2013,1,19),Date.newInstance(2013,1,26));
+       } 
+       
+    static testMethod void testRecurringACHSemiMonthly() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r_ach_l3'];
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,14,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertRecurringACHValues(loanAcc2,Date.newInstance(2013,2,1),Date.newInstance(2013,2,16));
+       }
+       
+    static testMethod void testOTACH() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='ot_ach_l1'];
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,2,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertOTACHValues(loanAcc2,Date.newInstance(2013,1,20));
+       }
+       
+       
+    static testMethod void testRecurringACHWithOTACHOnSameLoan() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r&ot_ach_l1'];
+        Loan_Account__c loanAcc1 = TestLoan.getLoanAccount(loanAcc);
+        system.assertEquals(Date.newInstance(2013,1,22),loanAcc1.OT_ACH_Debit_Date__c);
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,3,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertRecurringACHValues(loanAcc2,Date.newInstance(2013,1,21),Date.newInstance(2013,2,21));
+        
+        system.assertEquals(Date.newInstance(2013,1,22),loanAcc2.OT_ACH_Debit_Date__c);
+        system.assertEquals(100,ValueUtil.round(loanAcc2.OT_ACH_Fee_Amount__c));
+        system.assertEquals(300,ValueUtil.round(loanAcc2.OT_ACH_Payment_Amount__c));
+        
+       }
+    static testMethod void testOTACHWithRecurringACHOnSameLoan() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r&ot_ach_l2'];
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,5,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        assertOTACHValues(loanAcc2,Date.newInstance(2013,1,23));
+        
+        system.assertEquals(true, loanAcc2.ACH_On__c);
+        system.assertEquals(Date.newInstance(2013,1,24), loanAcc2.ACH_Next_Debit_Date__c);
+        system.assertEquals(500,ValueUtil.round(loanAcc2.ACH_debit_amount__c));
+       }  
+       
+    static testMethod void testOTAndRecurringACHOnDifferentLoansSameDate(){
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc_ot =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r&ot_ot_ach_l1'];
+        Loan_Account__c loanAcc_r =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r&ot_r_ach_l1'];
+        
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,7,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        
+        Loan_Account__c loanAcc2_r = TestLoan.getLoanAccount(loanAcc_r);
+        Loan_Account__c loanAcc2_ot = TestLoan.getLoanAccount(loanAcc_ot);
+       
+        //Commented because seperate files are getting generated for OT and Recurring ACH(Ticket #83)
+        //assertRecurringACHValues(loanAcc2_r,Date.newInstance(2013,1,25),Date.newInstance(2013,2,25));
+        //assertOTACHValues(loanAcc2_ot,Date.newInstance(2013,1,25));
+       }
+     
+     static testMethod void testACHRecurringEndDate() {
+        TestLoan.achinitiator();
+        achInitiator();
+        Loan_Account__c loanAcc =[Select id,Name from Loan_Account__c where Loan_Account_External_Id__c='r_ach_l4'];
+        Test.startTest();
+            GlobalProcessFacade.moveDayAheadByNDaysStartedToStarted(null,8,null);
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+        Test.stopTest();
+        Loan_Account__c loanAcc2 = TestLoan.getLoanAccount(loanAcc);
+        
+        system.assertEquals(false, loanAcc2.ACH_On__c);
+        system.assertEquals(null, loanAcc2.ACH_Next_Debit_Date__c);
+        
+       }
+       
+       static testMethod void testBulkACH(){
+       TestLoan.achinitiator();
+       achInitiator();
+       Loan_Account__c []loanAcc = [Select id from Loan_Account__c where Loan_Account_External_Id__c like 'bulk_r_ach_l%'];
+       Test.startTest();
+            GlobalProcessFacade.moveDayAheadStartedToStarted(null);
+       Test.stopTest();
+       
+       for(Loan_Account__c loanAcc2:[Select id,ACH_On__c,ACH_Next_Debit_Date__c
+                                      from Loan_Account__c where id in:loanAcc]){
+        system.assertEquals(true, loanAcc2.ACH_On__c);
+        system.assertEquals(Date.newInstance(2013,2,17), loanAcc2.ACH_Next_Debit_Date__c);
+        }
+        
+        Date ACH_DebitDate = Date.newInstance(2013,1,17);
+        String fileNameLike = ACH_DebitDate.format();
+        String fileName = '%- ACH -%' + fileNameLike + '%';
+        Document[] doc = [Select id,Name from Document where Name like: fileName];
+        system.debug(system.loggingLevel.ERROR,'-----'+doc);
+        system.assertEquals(1, doc.size());
+        ACHVerifier achverifier = new ACHVerifier(ACH_DebitDate);
+        achverifier.verify();
+        
+        Map<String, achverifier.ErrorCode> achErrorMap = achverifier.getErrors();
+        system.debug(system.loggingLevel.ERROR,'-----'+achErrorMap.values().size());
+        String loanError='';
+        
+        for(Loan_Account__c loanAcc2:[Select id,Name
+                                      from Loan_Account__c where id in:loanAcc]){
+        loanError = '\'' + loanAcc2.Name + '\'';
+        achErrorMap.get(loanError);
+        system.assertEquals(true, achErrorMap.isEmpty());
+        }
+        
+        fileName = '%- ACH Batch -%' + fileNameLike + '%';
+        Data_Migration_Batch__c[] dmb=[Select id,Batch_Name__c from Data_Migration_Batch__c where Interface_Name__c='Loan Payment Transaction Interface' and Batch_Name__c like:fileName];
+        system.debug(system.loggingLevel.ERROR,'-----'+dmb);
+        system.assertEquals(1, dmb.size());
+        
+               
+       Loan_Payment_Transaction_Interface__c[] lpti = [Select id,Stage__c,Payment_Mode_Id__c,Loan_Id__c,Transaction_Amount__c,
+                                                        Transaction_Date__c
+                                                        from Loan_Payment_Transaction_Interface__c 
+                                                        where Data_Migration_Batch__c=:dmb[0].id
+                                                        AND Loan_Id__c in:loanAcc];
+        system.assertEquals(150, lpti.size()); 
+                                                       
+        Payment_Mode__c pm =[Select id,Name from Payment_Mode__c where Name='ACH'];
+        for(Loan_Payment_Transaction_Interface__c lp : [Select id,Stage__c,Payment_Mode_Id__c,Transaction_Amount__c,Transaction_Date__c
+                                       from Loan_Payment_Transaction_Interface__c where id in:lpti]){                                                
+       
+        system.assertEquals('Pre-Import', lp.Stage__c);
+        system.assertEquals(pm.id, lp.Payment_Mode_Id__c);
+        system.assertEquals(500, ValueUtil.round(lp.Transaction_Amount__c));
+        system.assertEquals(ACH_DebitDate, lp.Transaction_Date__c);
+       
+       
+       }
+    }
+}

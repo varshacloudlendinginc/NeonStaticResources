@@ -1,0 +1,10 @@
+ID,LOAN__PLAN_DESCRIPTION__C,LOAN__CALCULATION_METHOD__C,LOAN__COMMISSION_DISBURSEMENT_METHOD__C,LOAN__BUY_RATE__C,LOAN__UPFRONT_PERCENTAGE__C,LOAN__ENABLED__C,LOAN__FLAT_AMOUNT__C,LOAN__FACTOR__C,LOAN__MAXIMUM_COMMISSION_PERCENTAGE__C
+cp1,Flat Upfront Plan,Flat Amount,Upfront,3,20,TRUE,100,100,8
+cp2,Flat Month End Plan,Flat Amount,Upfront at month end,3,20,TRUE,100,100,8
+cp3,Flat Pay As Received Plan,Flat Amount,Pay as received,3,20,TRUE,100,100,8
+cp4,Percentage of loan amount Upfront,Percentage Of Financed Amount,Upfront,3,20,TRUE,100,50,8
+cp5,Percentage of loan amount Month End,Percentage Of Financed Amount,Upfront at month end,3,20,TRUE,100,50,8
+cp6,Percentage of loan amount As Received,Percentage Of Financed Amount,Pay as received,3,20,TRUE,100,50,8
+cp7,Spread Upfront,Spread,Upfront,3,20,TRUE,100,50,8
+cp8,Spread Upfront At Month End,Spread,Upfront at month end,3,20,TRUE,100,50,8
+cp9,Spread Payas received,Spread,Pay as received,3,20,TRUE,100,50,5

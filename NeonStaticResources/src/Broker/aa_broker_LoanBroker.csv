@@ -1,0 +1,6 @@
+id,loan__Contact__c,loan__Buy_Rate__c,loan__Calculation_Method__c,loan__Commission_Amount__c,loan__Commission_Disbursement_Method__c,loan__Total_Commission_Paid_Amount__c,loan__Commission_Plan__c,loan__Enabled__c,loan__Factor__c,loan__Flat_Amount__c,loan__Last_Payment_Date__c,loan__Lending_Account__c,loan__Maximum_Commission_Percentage__c,loan__Next_Payment_Date__c,loan__Plan_Description__c,loan__Remaining_Commission_Amount_Funding__c,loan__Upfront_Commission_Amount__c,loan__Upfront_Percentage__c
+lb1,c4,3,Flat Amount,100,Upfront,0,cp1,TRUE,100,100,,l13_broker_1,8,,Flat Upfront Plan,0,100,20
+lb2,c4,3,Percentage Of Financed Amount,440,Upfront at month end,0,cp5,TRUE,50,100,,l13_broker_2,8,,Percentage of loan amount Month End,352,88,20
+lb3,c4,3,Spread,256.64,Pay as received,0,cp9,TRUE,50,100,,l13_broker_3,5,,Spread Payas received,205.31,51.33,20
+lb4,c4,3,Percentage Of Financed Amount,400,Upfront at month end,80,cp5,TRUE,50,100,2013-04-01,l13_broker_4,8,2013-05-31,Percenrtage of loan amount Month End,320,80,20
+lb5,c4,3,Spread,125.55,Pay as received,25.11,cp9,TRUE,50,100,2013-04-01,l13_broker_5,5,2013-05-31,Spread Payas received,100.44,25.11,20

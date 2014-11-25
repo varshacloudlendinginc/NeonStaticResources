@@ -1,0 +1,26 @@
+id,NAME
+Loan Repayment,Loan Repayment
+Loan Disbursal,Loan Disbursal
+Loan Repayment Reversal,Loan Repayment Reversal
+Loan Disbursal Reversal,Loan Disbursal Reversal
+Loan Write Off,Loan Write Off
+Loan Pay Off,Loan Pay Off
+Start Of Day,Start Of Day
+End Of Day,End Of Day
+Loan Write Off Recovery,Loan Write Off Recovery
+Loan Loss Provision,Loan Loss Provision
+Savings Deposit,Savings Deposit
+Savings Withdrawal,Savings Withdrawal
+Registration Fees,Registration Fees
+Savings Interest Accrual,Savings Interest Accrual
+Savings Interest Expense,Savings Interest Expense
+Savings Interest Adjustment,Savings Interest Adjustment
+Journal Voucher,Journal Voucher
+Month End,Month End
+Year End,Year End
+Internal Transfer,Internal Transfer
+Fee Payment,Fee Payment
+Interest Amortization,Interest Amortization
+Interest Amortization Reversal,Interest Amortization Reversal
+Fee Payment Reversal,Fee Payment Reversal
+Refund,Refund

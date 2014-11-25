@@ -1,0 +1,5 @@
+id,FIRSTNAME,LASTNAME,Birthdate,LOAN__BRANCH__C, loan__Contact_Type__c
+c1,Sample,Contact1,1987-03-09,Br1,
+c2,Sample,Contact2,1987-03-09,Br1,
+c3,Sample,Contact3,1987-03-09,Br1,
+c4,Sample,Broker1,1987-03-10,Br1,Broker

@@ -1,0 +1,34 @@
+id,NAME
+Fixed Deposit Matured,Fixed Deposit Matured
+Loan Disbursement,Loan Disbursement
+SOD (Normal Accounts),SOD (Normal Accounts)
+SOD (Suspended Accounts-Suspension Day),SOD (Suspended Accounts-Suspension Day)
+SOD (Suspended Accounts-Post Suspension Day),SOD (Suspended Accounts-Post Suspension Day)
+Customer Repayment (Normal Accounts),Customer Repayment (Normal Accounts)
+Customer Repayment (Suspended Accounts),Customer Repayment (Suspended Accounts)
+Loan Pay-Off (Normal Accounts),Loan Pay-Off (Normal Accounts)
+Loan Pay-Off (Suspended Accounts),Loan Pay-Off (Suspended Accounts)
+Loan Write-Off,Loan Write-Off
+Write-Off Recovery,Write-Off Recovery
+Loan Loss Provision,Loan Loss Provision
+Savings Deposit,Savings Deposit
+Savings Withdrawal,Savings Withdrawal
+Loan Repayment Reversal,Loan Repayment Reversal
+Loan Disbursal Reversal,Loan Disbursal Reversal
+Savings Interest Accrued,Savings Interest Accrued
+Savings Interest Expensed,Savings Interest Expensed
+Outward Check Cleared,Outward Check Cleared
+Outward Check Bounced,Outward Check Bounced
+Outward Check Deposit,Outward Check Deposit
+Inward Check Presented,Inward Check Presented
+Inward Check Cleared,Inward Check Cleared
+Inward Check Bounced,Inward Check Bounced
+Interest Amortization,Interest Amortization
+Customer Repayment (Normal Accounts) - Bank Payment,Customer Repayment (Normal Accounts) - Bank Payment
+Fee Payment - Cash,Fee Payment - Cash
+Fee Payment - Bank,Fee Payment - Bank
+Interest Amortization Reversal,Interest Amortization Reversal
+Fee Payment Reversal - Bank,Fee Payment Reversal - Bank
+Fee Payment Reversal - Cash,Fee Payment Reversal - Cash
+Customer Repayment (Normal Accounts) - Excess,Customer Repayment (Normal Accounts) - Excess
+Refund,Refund

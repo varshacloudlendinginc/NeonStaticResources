@@ -1,0 +1,3 @@
+ID,LOAN__CONTACT__C,LOAN__BROKER__C,LOAN__TRANSACTION_AMOUNT__C,LOAN__TRANSACTION_DATE__C,LOAN__TRANSACTION_DESCRIPTION__C,LOAN__REFERENCE__C,LOAN__TRANSACTION_CODE__C,LOAN__SYSTEM_CREATED__C
+lb4_bt1,c4,lb4,80,2013-04-01,Upfront Commission Disbursement,Upfront Commission disbursement for :LAI-01283002,Upfront Commission Disbursement,TRUE
+lb5_bt1,c4,lb5,25.11,2013-04-01,Upfront Commission Disbursement,Upfront Commission disbursement for :LAI-01283003,Upfront Commission Disbursement,TRUE
